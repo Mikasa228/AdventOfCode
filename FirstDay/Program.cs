@@ -1,7 +1,9 @@
-﻿List<int> sums = new();
+﻿var inputPath = @"..\..\..\input.txt";
+
+List<int> sums = new();
 int temp = 0;
 
-using var reader = new StreamReader(@"C:\Users\mmorozov\source\repos\AdventOfCode\FirstDay\input.txt");
+using var reader = new StreamReader(inputPath);
 while (!reader.EndOfStream)
 {
     var inputString = reader.ReadLine();

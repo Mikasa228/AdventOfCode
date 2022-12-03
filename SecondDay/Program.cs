@@ -4,7 +4,7 @@ public class Program
 {
     public static void Main()
     {
-        var inputPath = @"C:\Users\mmorozov\source\repos\AdventOfCode\SecondDay\input.txt";
+        var inputPath = @"..\..\..\input.txt";
 
         var firstMethod = CalculatePartOne(inputPath);
         var secondMethod = CalculatePartTwo(inputPath);
