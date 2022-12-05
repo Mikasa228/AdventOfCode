@@ -2,8 +2,8 @@
 
 const string inputPath = @"..\..\..\input.txt";
 
-var stacksFirst = new Dictionary<int, Stack<char>>();
-var stacksSecond = new Dictionary<int, Stack<char>>();
+var stacksFirst = new List<Stack<char>>();
+var stacksSecond = new List<Stack<char>>();
 
 bool first = true;
 
@@ -16,8 +16,11 @@ while (!reader.EndOfStream)
     // Initializing necessary amount of stacks
     if (first)
     {
-        for (int i = 0; i <= fullString.Length / 4; i++)
-            stacksFirst[i] = new Stack<char>();
+        for (int _ = 0; _ <= fullString.Length / 4; _++)
+        {
+            stacksFirst.Add(new Stack<char>());
+            stacksSecond.Add(new Stack<char>());
+        }
 
         first = false;
     }
@@ -58,8 +61,8 @@ while (!reader.EndOfStream)
     for (int i = 0; i < amount; i++) stacksSecond[to - 1].Push(temp.Pop());
 }
 
-var lettasFirst = stacksFirst.Select(pair => pair.Value.Pop());
-var lettasSecond = stacksSecond.Select(pair => pair.Value.Pop());
+var lettasFirst = stacksFirst.Select(stack => stack.Pop());
+var lettasSecond = stacksSecond.Select(stack => stack.Pop());
 
 var resultFirst = string.Concat(lettasFirst);
 var resultSecond = string.Concat(lettasSecond);
