@@ -5,7 +5,7 @@ const string inputPath = @"..\..\..\input.txt";
 var stacksFirst = new List<Stack<char>>();
 var stacksSecond = new List<Stack<char>>();
 
-bool first = true;
+bool isInitialized = false;
 
 using var reader = new StreamReader(inputPath);
 while (!reader.EndOfStream)
@@ -14,7 +14,7 @@ while (!reader.EndOfStream)
     if (string.IsNullOrEmpty(fullString)) break;
 
     // Initializing necessary amount of stacks
-    if (first)
+    if (!isInitialized)
     {
         for (int _ = 0; _ <= fullString.Length / 4; _++)
         {
@@ -22,7 +22,7 @@ while (!reader.EndOfStream)
             stacksSecond.Add(new Stack<char>());
         }
 
-        first = false;
+        isInitialized = true;
     }
 
     for (int i = 1; i < fullString.Length; i += 4)
@@ -37,9 +37,8 @@ while (!reader.EndOfStream)
 // Reversing the stacks
 for (int i = 0; i < stacksFirst.Count; i++)
 {
-    var reversedStack = stacksFirst[i];
-    stacksFirst[i] = new(reversedStack);
-    stacksSecond[i] = new(reversedStack);
+    stacksSecond[i] = new(stacksFirst[i]);
+    stacksFirst[i] = new(stacksFirst[i]);
 }
 
 while (!reader.EndOfStream)
@@ -61,10 +60,6 @@ while (!reader.EndOfStream)
     for (int i = 0; i < amount; i++) stacksSecond[to - 1].Push(temp.Pop());
 }
 
-var lettasFirst = stacksFirst.Select(stack => stack.Pop());
-var lettasSecond = stacksSecond.Select(stack => stack.Pop());
+Console.WriteLine($"Part one: {GetAnswer(stacksFirst)}\nPart two: {GetAnswer(stacksSecond)}");
 
-var resultFirst = string.Concat(lettasFirst);
-var resultSecond = string.Concat(lettasSecond);
-
-Console.WriteLine($"Part one: {resultFirst}\nPart two: {resultSecond}");
+static string GetAnswer(List<Stack<char>> stacks) => string.Concat(stacks.Select(stack => stack.Pop()));
