@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Common;
+using System.Text.RegularExpressions;
 
 const string inputPath = @"..\..\..\input.txt";
 
@@ -46,18 +47,19 @@ while (!reader.EndOfStream)
     string? fullString = reader.ReadLine();
     if (fullString is null) throw new NullReferenceException();
 
-    var list = Regex.Split(fullString, @"\D+");
-    var amount = int.Parse(list[1]);
-    var from = int.Parse(list[2]);
-    var to = int.Parse(list[3]);
+    var instruction = Regex.Match(fullString, @"move (?'amount'\d+) from (?'from'\d+) to (?'to'\d+)");
+
+    var amount = instruction.GetIntValue("amount");
+    var from = instruction.GetIntValue("from") - 1;
+    var to = instruction.GetIntValue("to") - 1;
 
     // Solution for part one
-    for (int i = 0; i < amount; i++) stacksFirst[to - 1].Push(stacksFirst[from - 1].Pop());
+    for (int _ = 0; _ < amount; _++) stacksFirst[to].Push(stacksFirst[from].Pop());
 
     // Solution for part two
     var temp = new Stack<char>();
-    for (int i = 0; i < amount; i++) temp.Push(stacksSecond[from - 1].Pop());
-    for (int i = 0; i < amount; i++) stacksSecond[to - 1].Push(temp.Pop());
+    for (int _ = 0; _ < amount; _++) temp.Push(stacksSecond[from].Pop());
+    for (int _ = 0; _ < amount; _++) stacksSecond[to].Push(temp.Pop());
 }
 
 Console.WriteLine($"Part one: {GetAnswer(stacksFirst)}\nPart two: {GetAnswer(stacksSecond)}");
