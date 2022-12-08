@@ -3,10 +3,8 @@
 int resultFirst = -1;
 int resultSecond = -1;
 
-var treeRows = new List<List<int>>();
-var treeColumns = new List<List<int>>();
+var treeMatrix = new List<List<int>>();
 var visibleTrees = new List<int>();
-var visibleString = string.Join(' ', visibleTrees);
 
 using var reader = new StreamReader(inputPath);
 while (!reader.EndOfStream)
@@ -19,123 +17,72 @@ while (!reader.EndOfStream)
     {
         treeRow.Add(int.Parse(tree.ToString()));
     }
-    treeRows.Add(treeRow);
+    treeMatrix.Add(treeRow);
 }
 
-for (int i = 0; i < treeRows.Count; i++)
+for (int rowIndex = 0; rowIndex < treeMatrix.Count; rowIndex++)
 {
-    var treeColumn = new List<int>();
-    foreach (var treeRow in treeRows)
+    for (int columnIndex = 0; columnIndex < treeMatrix.Count; columnIndex++)
     {
-        treeColumn.Add(treeRow[i]);
-    }
-    treeColumns.Add(treeColumn);
-}
+        var theTree = treeMatrix[rowIndex][columnIndex];
 
-for (int i = 0; i < treeRows.Count; i++)
-{
-    for (int j = 0; j < treeColumns.Count; j++)
-    {
-        var theTree = treeRows[i][j];
-        var treeRow = treeRows[i];
-        var treeColumn = treeColumns[j];
-        var treeRowString = string.Join("", treeRow);
-        var Sub = treeRow.GetRange(0, j);
-        var subString = string.Join("", Sub);
-        if (Sub.All(x => x < theTree))
+        foreach (var subList in treeMatrix.GetDirections(rowIndex, columnIndex))
         {
-            visibleTrees.Add(theTree);
-            resultSecond = Math.Max(resultSecond, GetScenicScore(theTree, treeRow, treeColumn, j, i));
-            visibleString = string.Join(' ', visibleTrees);
-            continue;
-        }
-        if (j + 1 <= treeRows.Count)
-        {
-            Sub = treeRow.GetRange(j + 1, treeRows.Count - (j + 1));
-            subString = string.Join("", Sub);
-            if (Sub.All(x => x < theTree))
-            {
-                visibleTrees.Add(theTree);
-                resultSecond = Math.Max(resultSecond, GetScenicScore(theTree, treeRow, treeColumn, j, i));
-                visibleString = string.Join(' ', visibleTrees);
-                continue;
-            }
-        }
+            if (subList.Any(tree => tree >= theTree)) continue;
 
-        var treeColumnString = string.Join("", treeColumn);
-        var SubColumn = treeColumn.GetRange(0, i);
-        var subColumnString = string.Join("", SubColumn);
-        if (SubColumn.All(x => x < theTree))
-        {
             visibleTrees.Add(theTree);
-            resultSecond = Math.Max(resultSecond, GetScenicScore(theTree, treeRow, treeColumn, j, i));
-            visibleString = string.Join(' ', visibleTrees);
-            continue;
-        }
-        if (i + 1 <= treeColumns.Count)
-        {
-            SubColumn = treeColumn.GetRange(i + 1, treeColumns.Count - (i + 1));
-            subColumnString = string.Join("", SubColumn);
-            if (SubColumn.All(x => x < theTree))
-            {
-                visibleTrees.Add(theTree);
-                resultSecond = Math.Max(resultSecond, GetScenicScore(theTree, treeRow, treeColumn, j, i));
-                visibleString = string.Join(' ', visibleTrees);
-            }
+            resultSecond = Math.Max(resultSecond, treeMatrix.GetTotalScenicScore(rowIndex, columnIndex));
+            break;
         }
     }
 }
 
 resultFirst = visibleTrees.Count;
-Console.WriteLine($"Part one: {resultFirst}\nPart two: {resultSecond}\n"); ;
+Console.WriteLine($"Part one: {resultFirst}\nPart two: {resultSecond}\n");
 
 
-static int GetScenicScore(int theTree, List<int> row, List<int> column, int rowPosition, int columnPosition)
+static class Extensions
 {
-    int left = 0;
-    int right = 0;
-    int up = 0;
-    int down = 0;
-
-    for (int i = rowPosition; i >= 0; i--)
+    public static List<List<int>> GetDirections(this List<List<int>> matrix, int rowIndex, int columnIndex)
     {
-        if (i == rowPosition) continue;
-        left++;
-        if (theTree <= row[i])
+        var row = matrix[rowIndex];
+        var column = matrix.Select(row => row[columnIndex]).ToList();
+
+        return new List<List<int>>()
         {
-            break;
-        }
+            row.GetRange(0, columnIndex).Reversed(),
+            row.GetRange(columnIndex + 1, matrix.Count - (columnIndex + 1)),
+            column.GetRange(0, rowIndex).Reversed(),
+            column.GetRange(rowIndex + 1, matrix.Count - (rowIndex + 1))
+        };
     }
 
-    for (int i = rowPosition; i < row.Count; i++)
+    public static int GetTotalScenicScore(this List<List<int>> matrix, int rowIndex, int columnIndex)
     {
-        if (i == rowPosition) continue;
-        right++;
-        if (theTree <= row[i])
-        {
-            break;
-        }
+        var theTree = matrix[rowIndex][columnIndex];
+
+        var scenicScores = matrix.GetDirections(rowIndex, columnIndex)
+                                 .Select(direction => direction.GetScenicScore(theTree));
+
+        return scenicScores.Aggregate(1, (seed, value) => seed * value);
     }
 
-    for (int i = columnPosition; i >= 0; i--)
+    private static int GetScenicScore(this List<int> list, int theTree)
     {
-        if (i == columnPosition) continue;
-        up++;
-        if (theTree <= column[i])
+        int scenicScore = 0;
+
+        foreach (var tree in list)
         {
-            break;
+            scenicScore++;
+            if (theTree <= tree) break;
         }
+
+        return scenicScore;
     }
 
-    for (int i = columnPosition; i < column.Count; i++)
+    public static List<T> Reversed<T>(this List<T> list)
     {
-        if (i == columnPosition) continue;
-        down++;
-        if (theTree <= column[i])
-        {
-            break;
-        }
+        list.Reverse();
+        return list;
     }
-
-    return left * right * up * down;
 }
