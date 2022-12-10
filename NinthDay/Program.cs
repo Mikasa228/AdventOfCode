@@ -18,8 +18,7 @@ class Program
             var key = Console.ReadKey();
             if (key.Key.ToString() == "Enter")
             {
-                fastForward = true;
-                break;
+                fastForward = !fastForward;
             }
         }
 
@@ -42,7 +41,6 @@ class Program
 
         var firstHeadPosition = new Point(0, 0);
         var firstTailPosition = new Point(0, 0);
-
 
         visitedFirst.Add(firstTailPosition.ToString());
 
@@ -117,23 +115,14 @@ public class Point
 
     public void Move(string direction)
     {
-        switch (direction)
+        var _ = direction switch
         {
-            case "L":
-                X--;
-                break;
-            case "R":
-                X++;
-                break;
-            case "U":
-                Y++;
-                break;
-            case "D":
-                Y--;
-                break;
-            default:
-                break;
-        }
+            "L" => X--,
+            "R" => X++,
+            "U" => Y++,
+            "D" => Y--,
+            _ => throw new ArgumentException("Invalid parameter value.", nameof(direction))
+        };
     }
 
     internal void CatchUp(Point coordinate)
