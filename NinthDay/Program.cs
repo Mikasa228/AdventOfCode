@@ -3,6 +3,7 @@
 class Program
 {
     static bool fastForward = false;
+    static readonly object _locker = new();
 
     static void Main()
     {
@@ -10,15 +11,23 @@ class Program
         Console.ReadLine();
         Console.Clear();
 
-        var resultsTask = Task.Factory.StartNew(() => Run());
+        var resultsTask = Task.Factory.StartNew(() => Run(_locker));
 
         Console.WriteLine("Press Enter to fast-forward..");
         while (!resultsTask.IsCompleted)
         {
-            var key = Console.ReadKey();
-            if (key.Key.ToString() == "Enter")
+            if (!Console.KeyAvailable)
             {
-                fastForward = !fastForward;
+                Thread.Sleep(10);
+                continue;
+            }
+            lock (_locker)
+            {
+                var key = Console.ReadKey();
+                if (key.Key.ToString() == "Enter")
+                {
+                    fastForward = !fastForward;
+                }
             }
         }
 
@@ -32,7 +41,7 @@ class Program
         Console.WriteLine($"Part one: {results[0]}\nPart two: {results[1]}\n");
     }
 
-    static List<int> Run()
+    static List<int> Run(object locker)
     {
         const string inputPath = @"..\..\..\input.txt";
 
@@ -58,7 +67,7 @@ class Program
         }
         rope.Add(secondTailPosition);
 
-        var renderer = new RopeRenderer(rope);
+        var renderer = new RopeRenderer(rope, locker);
         renderer.RenderRope();
 
         visitedSecond.Add(secondTailPosition.ToString());

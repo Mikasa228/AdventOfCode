@@ -3,8 +3,12 @@
 internal class RopeRenderer
 {
     private readonly List<PointRenderer> renderers = new();
-    internal RopeRenderer(List<Point> points)
+    readonly object _locker;
+
+    internal RopeRenderer(List<Point> points, object locker)
     {
+        _locker = locker;
+
         Console.CursorVisible = false;
         for (int i = 0; i < points.Count; i++)
         {
@@ -20,13 +24,16 @@ internal class RopeRenderer
 
     internal void RenderRope()
     {
-        for (int i = renderers.Count - 2; i > 0; i--) renderers[i].CleanUp();
-        renderers[9].CleanUp();
-        renderers[0].CleanUp();
+        lock (_locker)
+        {
+            for (int i = renderers.Count - 2; i > 0; i--) renderers[i].CleanUp();
+            renderers[9].CleanUp();
+            renderers[0].CleanUp();
 
-        for (int i = renderers.Count - 2; i > 0; i--) renderers[i].Render();
-        renderers[9].Render();
-        renderers[0].Render();
+            for (int i = renderers.Count - 2; i > 0; i--) renderers[i].Render();
+            renderers[9].Render();
+            renderers[0].Render();
+        }
     }
 }
 
