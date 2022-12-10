@@ -46,18 +46,24 @@ internal class PointRenderer
     private int _previousX = 0;
     private int _previousY = 0;
 
-    private const int _offsetX = 105;
-    private const int _offsetY = 280;
+    private const int _offsetX = 103;
+    private const int _offsetY = 274;
 
-    private const double _coeffX = 52d / 156d;
-    private const double _coeffY = 196d / 280d;
+    private static readonly double _coeffX = 0;
+    private static readonly double _coeffY = 0;
+
+    static PointRenderer()
+    {
+        _coeffX = (Console.WindowHeight - 1) / 158d;
+        _coeffY = (Console.WindowWidth - 1) / 280d;
+    }
 
     internal PointRenderer(Point coordinate, string identifier)
     {
         _coordinate = coordinate;
         _identifier = identifier;
-
     }
+
     internal void CleanUp()
     {
         Console.SetCursorPosition(ModifyY(_previousY), ModifyX(_previousX));
@@ -76,6 +82,6 @@ internal class PointRenderer
         _previousY = _coordinate.Y;
     }
 
-    private static int ModifyX(int x) => (int)((x + _offsetX) * _coeffX) > 51 ? 51 : (int)((x + _offsetX) * _coeffX);
-    private static int ModifyY(int y) => (int)((y + _offsetY) * _coeffY) > 195 ? 195 : (int)((y + _offsetY) * _coeffY);
+    private static int ModifyX(int x) => (int)((x + _offsetX) * _coeffX);
+    private static int ModifyY(int y) => (int)((y + _offsetY) * _coeffY);
 }

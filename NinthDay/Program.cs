@@ -13,7 +13,7 @@ class Program
 
         var resultsTask = Task.Factory.StartNew(() => Run(_locker));
 
-        Console.WriteLine("Press Enter to fast-forward..");
+        Console.WriteLine("Press Enter to fast-forward...");
         while (!resultsTask.IsCompleted)
         {
             if (!Console.KeyAvailable)
@@ -86,18 +86,14 @@ class Program
             {
                 // Solution for part one
                 firstHeadPosition.Move(direction);
-                renderer.RenderRope();
-                if (!fastForward) Thread.Sleep(1);
                 firstTailPosition.CatchUp(firstHeadPosition);
                 if (!visitedFirst.Contains(firstTailPosition.ToString())) visitedFirst.Add(firstTailPosition.ToString());
 
                 // Solution for part two
                 secondHeadPosition.Move(direction);
-                for (int j = 1; j < rope.Count; j++)
-                {
-                    rope[j].CatchUp(rope[j - 1]);
-
-                }
+                for (int j = 1; j < rope.Count; j++) rope[j].CatchUp(rope[j - 1]);
+                renderer.RenderRope();
+                if (!fastForward) Thread.Sleep(1);
                 if (!visitedSecond.Contains(secondTailPosition.ToString())) visitedSecond.Add(secondTailPosition.ToString());
             }
         }
