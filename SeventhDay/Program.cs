@@ -2,7 +2,7 @@
 
 class Program
 {
-    static Folder current { get; set; } = new Folder("/");
+    static Folder current = new("/");
 
     static void Main()
     {
@@ -37,15 +37,18 @@ class Program
             }
         }
 
-        resultFirst = Folder.GetFoldersWithSize(root, 100000).Select(item => item.Size).Sum();
-
+        //resultFirst = Folder.GetFoldersWithSize(root, 100000).Select(item => item.Size).Sum();
+        var folders = Folder.GetFolderTree(root);
         var unuzedSpace = 70000000 - root.Size;
         var requiredSpace = 30000000 - unuzedSpace;
 
-        resultSecond = Folder.GetFoldersWithSize(root, int.MaxValue)
-            .Select(item => item.Size)
-            .Where(size => size >= requiredSpace)
-            .Min();
+        resultFirst = folders
+            .Where(folder => folder.Size <= 100000)
+            .Select(item => item.Size).Sum();
+
+        resultSecond = folders
+            .Where(folder => folder.Size >= requiredSpace)
+            .Select(item => item.Size).Min();
 
         Console.WriteLine($"Part one: {resultFirst}\nPart two: {resultSecond}");
 
@@ -59,23 +62,22 @@ class Program
             }
             else if (command.EndsWith(".."))
             {
-                current = current.Parent;
+                current = current.Parent ?? current;
             }
             else
             {
-                if (command[3..] == current.Name)
-                {
-                    return;
-                }
-                current = current.GetFolder(command[3..]);
+                if (command[3..] == current.Name) return;
+
+                current = current.GetFolder(command[3..]) ?? current;
             }
         }
     }
 
-    class BaseItem
+    abstract class BaseItem
     {
         virtual public int Size { get; set; }
         public string Name { get; set; }
+
         public BaseItem(string name)
         {
             Name = name;
@@ -84,40 +86,35 @@ class Program
 
     class Folder : BaseItem
     {
-        List<BaseItem> Items { get; set; } = new();
-        public override int Size { get => Items.Select(item => item.Size).Sum(); }
-        public Folder? Parent { get; set; }
+        private readonly List<BaseItem> _items = new();
 
-        public Folder(string name, Folder parent = null) : base(name)
+        public override int Size { get => _items.Select(folder => folder.Size).Sum(); }
+        public Folder? Parent { get; private set; }
+
+        public Folder(string name, Folder? parent = null) : base(name)
         {
             Parent = parent;
         }
 
         public void AddItem(BaseItem item)
         {
-            Items.Add(item);
+            _items.Add(item);
         }
 
-        public Folder GetFolder(string name)
+        public Folder? GetFolder(string name)
         {
-            return Items.FirstOrDefault(item => item.Name == name) as Folder;
+            return _items.FirstOrDefault(item => item.Name == name) as Folder;
         }
 
-        public static List<Folder> GetFoldersWithSize(Folder start, int size)
+        public static List<Folder> GetFolderTree(Folder start)
         {
             var outputList = new List<Folder>();
 
-            foreach (var item in start.Items)
+            foreach (var item in start._items)
             {
-                if (item is Folder folderItem)
-                {
-                    outputList.AddRange(GetFoldersWithSize(folderItem, size));
-
-                    if (folderItem.Size <= size)
-                    {
-                        outputList.Add(folderItem);
-                    }
-                }
+                if (item is not Folder folder) continue;
+                outputList.Add(folder);
+                outputList.AddRange(GetFolderTree(folder));
             }
 
             return outputList;
