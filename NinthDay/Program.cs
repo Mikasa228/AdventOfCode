@@ -1,9 +1,12 @@
-﻿namespace NinthDay;
+﻿using System.Collections.Concurrent;
+
+namespace NinthDay;
 
 class Program
 {
     static bool fastForward = false;
     static readonly object _locker = new();
+    private static ConcurrentQueue<Draw> queue = new ConcurrentQueue<Draw>();
 
     static void Main()
     {
@@ -11,17 +14,14 @@ class Program
         Console.ReadLine();
         Console.Clear();
 
-        var resultsTask = Task.Factory.StartNew(() => Run(_locker));
+        var resultsTask = Task.Factory.StartNew(() => Run(queue));
 
         Console.WriteLine("Press Enter to fast-forward...");
+        Console.CursorVisible = false;
+
         while (!resultsTask.IsCompleted)
         {
-            if (!Console.KeyAvailable)
-            {
-                Thread.Sleep(10);
-                continue;
-            }
-            lock (_locker)
+            if (Console.KeyAvailable)
             {
                 var key = Console.ReadKey();
                 if (key.Key.ToString() == "Enter")
@@ -29,7 +29,17 @@ class Program
                     fastForward = !fastForward;
                 }
             }
+
+            if (!queue.TryDequeue(out var message))
+            {
+                Thread.Sleep(10);
+                continue;
+            }
+            Console.SetCursorPosition(message.Y, message.X);
+            Console.Write(message.Text);
         }
+
+        Render();
 
         var results = resultsTask.Result;
 
@@ -41,7 +51,16 @@ class Program
         Console.WriteLine($"Part one: {results[0]}\nPart two: {results[1]}\n");
     }
 
-    static List<int> Run(object locker)
+    static void Render()
+    {
+        while (queue.TryDequeue(out var message))
+        {
+            Console.SetCursorPosition(message.Y, message.X);
+            Console.Write(message.Text);
+        }
+    }
+
+    static List<int> Run(ConcurrentQueue<Draw> queue)
     {
         const string inputPath = @"..\..\..\input.txt";
 
@@ -67,8 +86,11 @@ class Program
         }
         rope.Add(secondTailPosition);
 
-        var renderer = new RopeRenderer(rope, locker);
-        renderer.RenderRope();
+        var renderer = new RopeRenderer(rope);
+        foreach (var draw in renderer.RenderRope())
+        {
+            queue.Enqueue(draw);
+        }
 
         visitedSecond.Add(secondTailPosition.ToString());
 
@@ -92,7 +114,10 @@ class Program
                 // Solution for part two
                 secondHeadPosition.Move(direction);
                 for (int j = 1; j < rope.Count; j++) rope[j].CatchUp(rope[j - 1]);
-                renderer.RenderRope();
+                foreach (var draw in renderer.RenderRope())
+                {
+                    queue.Enqueue(draw);
+                }
                 if (!fastForward) Thread.Sleep(1);
                 if (!visitedSecond.Contains(secondTailPosition.ToString())) visitedSecond.Add(secondTailPosition.ToString());
             }
@@ -160,4 +185,8 @@ public class Point
     {
         return $"{X} : {Y}";
     }
+}
+
+public record Draw(int Y, int X, string Text)
+{
 }
