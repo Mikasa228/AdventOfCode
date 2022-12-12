@@ -1,15 +1,13 @@
-﻿namespace NinthDay;
+﻿using System.Collections.Concurrent;
+
+namespace NinthDay;
 
 internal class RopeRenderer
 {
     private readonly List<PointRenderer> renderers = new();
-    readonly object _locker;
 
-    internal RopeRenderer(List<Point> points, object locker)
+    internal RopeRenderer(List<Point> points)
     {
-        _locker = locker;
-
-        Console.CursorVisible = false;
         for (int i = 0; i < points.Count; i++)
         {
             var identifier = i switch
@@ -22,18 +20,17 @@ internal class RopeRenderer
         }
     }
 
-    internal void RenderRope()
+    internal IEnumerable<Draw> RenderRope()
     {
-        lock (_locker)
-        {
-            for (int i = renderers.Count - 2; i > 0; i--) renderers[i].CleanUp();
-            renderers[9].CleanUp();
-            renderers[0].CleanUp();
+        for (int i = renderers.Count - 2; i > 0; i--)
+            yield return renderers[i].CleanUp();
+        yield return renderers[9].CleanUp();
+        yield return renderers[0].CleanUp();
 
-            for (int i = renderers.Count - 2; i > 0; i--) renderers[i].Render();
-            renderers[9].Render();
-            renderers[0].Render();
-        }
+        for (int i = renderers.Count - 2; i > 0; i--)
+            yield return renderers[i].Render();
+        yield return renderers[9].Render();
+        yield return renderers[0].Render();
     }
 }
 
@@ -64,22 +61,21 @@ internal class PointRenderer
         _identifier = identifier;
     }
 
-    internal void CleanUp()
+    internal Draw CleanUp()
     {
-        Console.SetCursorPosition(ModifyY(_previousY), ModifyX(_previousX));
         var placeholder = _identifier == "8" ? "." : " ";
-        Console.Write(placeholder);
+        return new Draw(ModifyY(_previousY), ModifyX(_previousX), placeholder);
     }
 
-    internal void Render()
+    internal Draw Render()
     {
         if (_identifier == "э" && _coordinate.Y < _previousY) _identifier = "c";
         if (_identifier == "c" && _coordinate.Y > _previousY) _identifier = "э";
 
-        Console.SetCursorPosition(ModifyY(_coordinate.Y), ModifyX(_coordinate.X));
-        Console.Write(_identifier);
         _previousX = _coordinate.X;
         _previousY = _coordinate.Y;
+
+        return new Draw(ModifyY(_coordinate.Y), ModifyX(_coordinate.X), _identifier);
     }
 
     private static int ModifyX(int x) => (int)((x + _offsetX) * _coeffX);
