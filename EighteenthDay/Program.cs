@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace SeventeenthDay;
 
@@ -47,10 +46,7 @@ class Program
         while (emptyDots.Count > 0)
         {
             var innerShape = new Dictionary<List<int>, int>();
-            bool gotNew = false;
             var first = emptyDots[0];
-            //innerShape[first] = 6;
-            //emptyDots.Remove(first);
 
             var additionQueue = new Queue<List<int>>();
             additionQueue.Enqueue(first);
@@ -59,7 +55,6 @@ class Program
             {
                 var dot = additionQueue.Dequeue();
                 emptyDots.Remove(dot);
-                Console.WriteLine($"Empty dots count: {emptyDots.Count}");
                 var dotNeighbors = emptyDots.Where(d => AreNeighbors(d, dot)).ToList();
                 innerShape[dot] = 6;
                 foreach (var neighbor in dotNeighbors)
@@ -68,38 +63,6 @@ class Program
                     emptyDots.Remove(neighbor);
                 }
             }
-
-
-            //do
-            //{
-            //    var additionQueue = new Queue<List<int>>();
-            //    foreach (var dot in innerShape)
-            //    {
-            //        var dotNeighbors = emptyDots.Where(x => AreNeighbors(x, emptyDots[0]));
-            //        if (dotNeighbors.Count() > 0) gotNew = true;
-            //        foreach (var item in dotNeighbors)
-            //        {
-            //            additionQueue.Enqueue(item);
-            //        }
-            //        while (additionQueue.Count > 0)
-            //        {
-            //            var item = additionQueue.Dequeue();
-            //            innerShape[item] = 6;
-            //            emptyDots.Remove(item);
-            //            innerShape[dot.Key] = innerShape[dot.Key] - dotNeighbors.Count();
-            //        }
-            //    }
-
-
-
-            //    //foreach (var dot in innerShape)
-            //    //{
-            //    //    if (emptyDots.Contains(dot))
-            //    //    {
-            //    //        emptyDots.Remove(dot);
-            //    //    }
-            //    //}
-            //} while (gotNew);
 
             CalculateFreeSides(innerShape);
 
@@ -110,55 +73,27 @@ class Program
 
         foreach (var shape in innerShapes)
         {
-            if (shape.Value <= 1500)
+            var gut = true;
+            foreach (var dot in shape.Key)
             {
-                resultSecond -= shape.Value;
-                //var counter = 0;
-                //foreach (var item in shape.Key)
-                //{
-                //    counter += dots.Where(d => AreNeighbors(d.Key, item.Key)).Count();
-                //}
-                //if (counter)
-                //{
-
-                //}
+                if (dots.Where(d => AreNeighbors(d.Key, dot.Key)).Count() != dot.Value)
+                {
+                    gut = false;
+                }
             }
+            if (gut) resultSecond -= shape.Value;
         }
-
-        //foreach (var item in emptyDots)
-        //{
-        //    foreach (var key in dots.Keys)
-        //    {
-        //        if (AreNeighbors(item.Key, key))
-        //        {
-        //            emptyDots[item.Key] = emptyDots[item.Key] - 1;
-        //            if (emptyDots[item.Key] == 0)
-        //            {
-        //                resultSecond -= 6;
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
-
-        //var sum = innerShapes.
 
         stopwatch.Stop();
 
         Console.WriteLine($"Part one: {resultFirst}\nPart two: {resultSecond}\nTime elapsed: {stopwatch.Elapsed}");
-
-
     }
 
     static bool AreNeighbors(List<int> list1, List<int> list2)
     {
-        if (list1[0] == list2[0] && list1[1] == list2[1] && Math.Abs(list1[2] - list2[2]) == 1
+        return list1[0] == list2[0] && list1[1] == list2[1] && Math.Abs(list1[2] - list2[2]) == 1
             || list1[0] == list2[0] && list1[2] == list2[2] && Math.Abs(list1[1] - list2[1]) == 1
-            || list1[1] == list2[1] && list1[2] == list2[2] && Math.Abs(list1[0] - list2[0]) == 1)
-        {
-            return true;
-        }
-        return false;
+            || list1[1] == list2[1] && list1[2] == list2[2] && Math.Abs(list1[0] - list2[0]) == 1;
     }
 
     private static void CalculateFreeSides(Dictionary<List<int>, int> dots)
