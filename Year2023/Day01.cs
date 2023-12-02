@@ -14,6 +14,8 @@ internal class Day01 : Day
         while (!reader.EndOfStream)
         {
             var line = reader.ReadLine();
+            if (line == null) throw new NullReferenceException(line);
+
             var numbers = line.Where(c => char.IsDigit(c)).ToList();
             output += int.Parse(numbers[0].ToString() + numbers[^1].ToString());
         }
@@ -40,6 +42,8 @@ internal class Day01 : Day
         {
             var numbers = new Dictionary<int, string>();
             var line = reader.ReadLine();
+            if (line == null) throw new NullReferenceException(line);
+            
             foreach (var pair in wordy)
             {
                 var pos = line.IndexOf(pair.Key);
