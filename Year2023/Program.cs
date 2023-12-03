@@ -6,6 +6,12 @@ var timer = new Stopwatch();
 timer.Start();
 
 Day currentDay = new Day02();
+
+if (!Directory.Exists($"../../../{currentDay.GetType().Name}"))
+{
+    PrepScript.Run("2023", currentDay.GetType().Name[^2..]);
+}
+
 try
 {
     if (currentDay.ValidateOne())
