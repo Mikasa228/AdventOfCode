@@ -14,25 +14,15 @@ if (!Directory.Exists($"../../../{currentDay.GetType().Name}"))
 
 try
 {
-    if (currentDay.ValidateOne())
-    {
-        Console.WriteLine("Solution: " + currentDay.MainSolveOne());
-        Console.WriteLine();
-    }
-    if (currentDay.ValidateTwo())
-    {
-        Console.WriteLine("Solution: " + currentDay.MainSolveTwo());
-        Console.WriteLine();
-    }
+    if (currentDay.ValidateOne()) Console.WriteLine("Solution: " + currentDay.MainSolveOne() + "\n");
+    if (currentDay.ValidateTwo()) Console.WriteLine("Solution: " + currentDay.MainSolveTwo() + "\n");
 }
 catch (NotImplementedException)
 {
     Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine("Solution is not implemented yet...");
+    Console.WriteLine("Solution is not implemented yet...\n");
     Console.ForegroundColor = ConsoleColor.White;
-    Console.WriteLine();
 }
-
 
 timer.Stop();
 Console.WriteLine("Runtime: " + timer.ElapsedMilliseconds + "ms");
