@@ -8,7 +8,7 @@ internal class Day03 : Day
     protected override int TestSolutionOne { get; set; } = 4361;
     protected override int TestSolutionTwo { get; set; } = 467835;
 
-    protected override int SolveOne(string input)
+    protected override long SolveOne(string input)
     {
         int output = 0;
         using var reader = new StreamReader(input);
@@ -127,7 +127,7 @@ internal class Day03 : Day
     }
 
 
-    protected override int SolveTwo(string input)
+    protected override long SolveTwo(string input)
     {
         int output = 0;
         using var reader = new StreamReader(input);

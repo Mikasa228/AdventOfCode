@@ -26,7 +26,7 @@ public abstract class Day
         return SolveTwo(InputTwo);
     }
 
-    protected abstract int SolveTwo(string input);
+    protected abstract long SolveTwo(string input);
 
     public bool ValidateOne()
     {
@@ -65,5 +65,5 @@ public abstract class Day
         return valid;
     }
 
-    protected abstract int SolveOne(string input);
+    protected abstract long SolveOne(string input);
 }

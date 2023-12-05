@@ -7,7 +7,7 @@ internal class Day04 : Day
     protected override int TestSolutionOne { get; set; } = 13;
     protected override int TestSolutionTwo { get; set; } = 30;
 
-    protected override int SolveOne(string input)
+    protected override long SolveOne(string input)
     {
         var output = 0;
         using var reader = new StreamReader(input);
@@ -26,7 +26,7 @@ internal class Day04 : Day
         return output;
     }
 
-    protected override int SolveTwo(string input)
+    protected override long SolveTwo(string input)
     {
         var pointer = -1;
         var results = new Dictionary<int, int>();

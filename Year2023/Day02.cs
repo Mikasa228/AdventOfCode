@@ -7,7 +7,7 @@ namespace Year2023
         protected override int TestSolutionOne { get; set; } = 8;
         protected override int TestSolutionTwo { get; set; } = 2286;
 
-        protected override int SolveOne(string input)
+        protected override long SolveOne(string input)
         {
             var output = 0;
 
@@ -53,7 +53,7 @@ namespace Year2023
             return true;
         }
 
-        protected override int SolveTwo(string input)
+        protected override long SolveTwo(string input)
         {
             var output = 0;
             using var reader = new StreamReader(input);
