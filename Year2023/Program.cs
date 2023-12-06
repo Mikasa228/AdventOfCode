@@ -25,4 +25,4 @@ catch (NotImplementedException)
 }
 
 timer.Stop();
-Console.WriteLine("Runtime: " + timer.ElapsedMilliseconds + "ms");
+Console.WriteLine($"Runtime: {timer.ElapsedMilliseconds/1000}s {timer.ElapsedMilliseconds%1000}ms");
