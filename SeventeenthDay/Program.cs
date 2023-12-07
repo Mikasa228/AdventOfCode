@@ -8,7 +8,7 @@ class Program
     const string inputPath = @"..\..\..\input.txt";
 
     static int resultFirst = 0;
-    static int resultSecond = 0;
+    static readonly int resultSecond = 0;
 
     static string? jetString;
     static int jetCursor = 0;
@@ -16,33 +16,33 @@ class Program
     static int currentPosition = 0;
     static Shape? currentShape;
 
-    static List<List<char>> cave = new()
+    static readonly List<List<char>> cave = new()
         {
             "#######".ToCharArray().ToList()
         };
 
-    static List<char> emptyRow = new() { '.', '.', '.', '.', '.', '.', '.' };
+    static readonly List<char> emptyRow = new() { '.', '.', '.', '.', '.', '.', '.' };
 
-    static Shape hLine = new(new()
+    static readonly Shape hLine = new(new()
         {
             "..@@@@.".ToCharArray().ToList()
         });
 
-    static Shape cross = new(new()
+    static readonly Shape cross = new(new()
         {
             "...@...".ToCharArray().ToList(),
             "..@@@..".ToCharArray().ToList(),
             "...@...".ToCharArray().ToList()
         });
 
-    static Shape corner = new(new()
+    static readonly Shape corner = new(new()
         {
             "..@@@..".ToCharArray().ToList(),
             "....@..".ToCharArray().ToList(),
             "....@..".ToCharArray().ToList()
         });
 
-    static Shape vLine = new(new()
+    static readonly Shape vLine = new(new()
         {
             "..@....".ToCharArray().ToList(),
             "..@....".ToCharArray().ToList(),
@@ -50,13 +50,13 @@ class Program
             "..@....".ToCharArray().ToList()
         });
 
-    static Shape square = new(new()
+    static readonly Shape square = new(new()
         {
             "..@@...".ToCharArray().ToList(),
             "..@@...".ToCharArray().ToList()
         });
 
-    static List<Shape> shapeRotation = new()
+    static readonly List<Shape> shapeRotation = new()
         {
             hLine,
             cross,
@@ -95,7 +95,7 @@ class Program
 
         PrintMap();
 
-        resultFirst = cave.Count() - 1;
+        resultFirst = cave.Count - 1;
 
         stopwatch.Stop();
 
@@ -106,7 +106,7 @@ class Program
             var direction = jetString?[jetCursor];
             var directionInt = direction == '>' ? 1 : -1;
 
-            jetCursor = jetCursor + 1 >= jetString.Length ? 0 : jetCursor + 1;
+            jetCursor = jetCursor + 1 >= jetString?.Length ? 0 : jetCursor + 1;
 
             for (int i = 0; i < currentShape?.Height; i++)
             {
@@ -129,6 +129,10 @@ class Program
             if (direction == '>')
             {
 
+                if (currentShape is null)
+                {
+                    throw new NullReferenceException();
+                }
                 for (int i = currentShape.Height - 1; i >= 0; i--)
                 {
                     for (int position = cave[0].Count - 1; position >= 0; position--)
@@ -148,6 +152,10 @@ class Program
 
             else
             {
+                if (currentShape is null)
+                {
+                    throw new NullReferenceException();
+                }
                 for (int i = currentShape.Height - 1; i >= 0; i--)
                 {
                     for (int position = 0; position < cave[0].Count; position++)
@@ -182,6 +190,10 @@ class Program
                     }
                 }
             }
+            if (currentShape is null)
+            {
+                throw new NullReferenceException();
+            }
             for (int i = currentShape.Height - 1; i >= 0 ; i--)
             {
                 for (int position = 0; position < cave[0].Count; position++)
@@ -199,7 +211,7 @@ class Program
             }
 
             currentPosition--;
-            var lastRow = cave[cave.Count - 1];
+            var lastRow = cave[^1];
             if (!lastRow.Contains('#')) cave.Remove(lastRow);
 
             return true;

@@ -8,7 +8,7 @@ class Program
     const string inputPath = @"..\..\..\input.txt";
 
     static int resultFirst = 0;
-    static int resultSecond = 0;
+    static readonly int resultSecond = 0;
 
     static int minX = int.MaxValue;
     static int maxX = int.MinValue;
@@ -32,7 +32,7 @@ class Program
         using var reader = new StreamReader(inputPath);
         while (!reader.EndOfStream)
         {
-            string fullString = reader.ReadLine();
+            var fullString = reader.ReadLine();
             if (string.IsNullOrEmpty(fullString)) throw new NullReferenceException();
 
             var match = Regex.Match(fullString, @"Sensor at x=(?'Sx'[-\d]+), y=(?'Sy'[-\d]+): closest beacon is at x=(?'Bx'[-\d]+), y=(?'By'[-\d]+)");
@@ -59,10 +59,10 @@ class Program
 
         foreach (var sensor in sensors)
         {
-            minX = Math.Min(minX, sensor.baseX - sensor.Radius);
-            minY = Math.Min(minY, sensor.baseY - sensor.Radius);
-            maxX = Math.Max(maxX, sensor.baseX + sensor.Radius);
-            maxY = Math.Max(maxY, sensor.baseY + sensor.Radius);
+            minX = Math.Min(minX, sensor.BaseX - sensor.Radius);
+            minY = Math.Min(minY, sensor.BaseY - sensor.Radius);
+            maxX = Math.Max(maxX, sensor.BaseX + sensor.Radius);
+            maxY = Math.Max(maxY, sensor.BaseY + sensor.Radius);
         }
 
         targetRowIndex -= minY;
@@ -203,26 +203,26 @@ class Program
 
     class Point
     {
-        public int baseX { get; set; }
-        public int baseY { get; set; }
-        public int X { get => baseX - minX; set => baseX = value + minX; }
-        public int Y { get => baseY - minY; set => baseY = value + minY; }
+        public int BaseX { get; set; }
+        public int BaseY { get; set; }
+        public int X { get => BaseX - minX; set => BaseX = value + minX; }
+        public int Y { get => BaseY - minY; set => BaseY = value + minY; }
 
         public Point(int x, int y)
         {
-            baseX = x;
-            baseY = y;
+            BaseX = x;
+            BaseY = y;
         }
 
         public Point(Point copy)
         {
-            baseX = copy.baseX;
-            baseY = copy.baseY;
+            BaseX = copy.BaseX;
+            BaseY = copy.BaseY;
         }
 
         public override string ToString()
         {
-            return $"{baseX} : {baseY}";
+            return $"{BaseX} : {BaseY}";
         }
     }
 
@@ -236,7 +236,7 @@ class Program
         public int Radius { get; set; }
         public Sensor(int x, int y, Beacon beacon) : base(x, y)
         {
-            Radius = Math.Abs(x - beacon.baseX) + Math.Abs(y - beacon.baseY);
+            Radius = Math.Abs(x - beacon.BaseX) + Math.Abs(y - beacon.BaseY);
         }
 
         public bool IsInRange(int x, int y)

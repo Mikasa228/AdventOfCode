@@ -36,17 +36,11 @@ class Program
         using var reader = new StreamReader(inputPath);
         while (!reader.EndOfStream)
         {
-
-
-            var levelOne = 0;
-            var levelTwo = 0;
-
-            string firstString = reader.ReadLine();
+            var firstString = reader.ReadLine();
             if (string.IsNullOrEmpty(firstString)) continue;
             packets.Add(firstString);
 
-            string secondString = reader.ReadLine();
-            if (secondString is null) throw new NullReferenceException();
+            var secondString = reader.ReadLine() ?? throw new NullReferenceException();
             packets.Add(secondString);
 
             index++;
@@ -70,6 +64,8 @@ class Program
         {
             var output = 0;
             bool isFinal = false;
+
+            if (first is null || second is null) throw new NullReferenceException();
 
             var firstMatch = Regex.Match(first, "(?<=\\[).*(?=\\])");
             var secondMatch = Regex.Match(second, "(?<=\\[).*(?=\\])");
@@ -206,10 +202,12 @@ class Program
             return output;
         }
 
-        public int Compare(string? first, string? second, out bool isFinal)
+        public static int Compare(string? first, string? second, out bool isFinal)
         {
             var output = 0;
             isFinal = false;
+
+            if (first is null || second is null) throw new NullReferenceException();
 
             var firstMatch = Regex.Match(first, "(?<=\\[).*(?=\\])");
             var secondMatch = Regex.Match(second, "(?<=\\[).*(?=\\])");

@@ -23,7 +23,7 @@ class Program
     static int minY = 0;
     static int maxY = 0;
 
-    static Point start = new(500, 0);
+    static readonly Point start = new(500, 0);
 
     static void Main()
     {
@@ -36,7 +36,7 @@ class Program
         using var reader = new StreamReader(inputPath);
         while (!reader.EndOfStream)
         {
-            string fullString = reader.ReadLine();
+            var fullString = reader.ReadLine();
             if (string.IsNullOrEmpty(fullString)) throw new NullReferenceException();
 
             var pointStrings = fullString.Split(" -> ");
@@ -49,13 +49,13 @@ class Program
             paths.Add(path);
         }
 
-        minY = Math.Min(0, paths.Min(path => path.Min(point => point.baseY)));
-        maxY = paths.Max(path => path.Max(point => point.baseY));
+        minY = Math.Min(0, paths.Min(path => path.Min(point => point.BaseY)));
+        maxY = paths.Max(path => path.Max(point => point.BaseY));
 
         var height = maxY - minY + 2;
 
-        minX = paths.Min(path => path.Min(point => point.baseX)) - height;
-        maxX = paths.Max(path => path.Max(point => point.baseX)) + height;
+        minX = paths.Min(path => path.Min(point => point.BaseX)) - height;
+        maxX = paths.Max(path => path.Max(point => point.BaseX)) + height;
 
         for (int rowIndex = 0; rowIndex <= maxY - minY; rowIndex++)
         {
@@ -124,7 +124,7 @@ class Program
                 var start = path[i];
                 var end = path[i + 1];
 
-                if (start.baseX != end.baseX)
+                if (start.BaseX != end.BaseX)
                 {
                     var rowIndex = start.Y;
                     for (int columnIndex = Math.Min(start.X, end.X); columnIndex <= Math.Max(start.X, end.X); columnIndex++)
@@ -133,7 +133,7 @@ class Program
                     }
                 }
 
-                if (start.baseY != end.baseY)
+                if (start.BaseY != end.BaseY)
                 {
                     var columnIndex = start.X;
                     for (int rowIndex = Math.Min(start.Y, end.Y); rowIndex <= Math.Max(start.Y, end.Y); rowIndex++)
@@ -151,7 +151,7 @@ class Program
 
         static bool DropSandFirst(Point startPoint, List<List<char>> map)
         {
-            Point target = new(startPoint.baseX, startPoint.baseY+1);
+            Point target = new(startPoint.BaseX, startPoint.BaseY+1);
 
             if (target.Y >= map.Count) return false;
 
@@ -163,10 +163,10 @@ class Program
                 target.Y = targetY;
             }
             if (target.X - 1 < 0) return false;
-            if (map[target.Y][target.X-1] == '.') return DropSandFirst(new Point(target.baseX - 1, target.baseY), map);
+            if (map[target.Y][target.X-1] == '.') return DropSandFirst(new Point(target.BaseX - 1, target.BaseY), map);
 
             if (target.X + 1 >= map[0].Count) return false;
-            if (map[target.Y][target.X+1] == '.') return DropSandFirst(new Point(target.baseX + 1, target.baseY), map);
+            if (map[target.Y][target.X+1] == '.') return DropSandFirst(new Point(target.BaseX + 1, target.BaseY), map);
 
             map[target.Y - 1][target.X] = 'o';
             resultFirst++;
@@ -176,7 +176,7 @@ class Program
 
         static bool DropSandSecond(Point startPoint, List<List<char>> map)
         {
-            Point target = new(startPoint.baseX, startPoint.baseY + 1);
+            Point target = new(startPoint.BaseX, startPoint.BaseY + 1);
 
             if (target.Y >= map.Count) return false;
 
@@ -188,10 +188,10 @@ class Program
                 target.Y = targetY;
             }
             if (target.X - 1 < 0) return false;
-            if (map[target.Y][target.X - 1] == '.') return DropSandSecond(new Point(target.baseX - 1, target.baseY), map);
+            if (map[target.Y][target.X - 1] == '.') return DropSandSecond(new Point(target.BaseX - 1, target.BaseY), map);
 
             if (target.X + 1 >= map[0].Count) return false;
-            if (map[target.Y][target.X + 1] == '.') return DropSandSecond(new Point(target.baseX + 1, target.baseY), map);
+            if (map[target.Y][target.X + 1] == '.') return DropSandSecond(new Point(target.BaseX + 1, target.BaseY), map);
 
             map[target.Y - 1][target.X] = 'o';
             resultSecond++;
@@ -226,26 +226,26 @@ class Program
 
     class Point
     {
-        public int baseX { get; set; }
-        public int baseY { get; set; }
-        public int X { get => baseX - minX; set => baseX = value + minX; }
-        public int Y { get => baseY - minY; set => baseY = value + minY; }
+        public int BaseX { get; set; }
+        public int BaseY { get; set; }
+        public int X { get => BaseX - minX; set => BaseX = value + minX; }
+        public int Y { get => BaseY - minY; set => BaseY = value + minY; }
 
         public Point(int x, int y)
         {
-            baseX = x;
-            baseY = y;
+            BaseX = x;
+            BaseY = y;
         }
 
         public Point(Point copy)
         {
-            baseX = copy.baseX;
-            baseY = copy.baseY;
+            BaseX = copy.BaseX;
+            BaseY = copy.BaseY;
         }
 
         public override string ToString()
         {
-            return $"{baseX} : {baseY}";
+            return $"{BaseX} : {BaseY}";
         }
     }
 }

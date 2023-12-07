@@ -13,7 +13,7 @@ class Program
     const string inputPath = @"..\..\..\input.txt";
 
     static int resultFirst = -1;
-    static int resultSecond = -1;
+    static readonly int resultSecond = -1;
 
     static void Main()
     {
@@ -25,16 +25,12 @@ class Program
 
         var distances = new List<int>();
         var chekked = new List<PathNode>();
-
-        PathNode start = null;
-        PathNode end = null;
+        PathNode? end = null;
 
         using var reader = new StreamReader(inputPath);
         while (!reader.EndOfStream)
         {
-            string fullString = reader.ReadLine();
-            if (fullString is null) throw new NullReferenceException();
-
+            var fullString = reader.ReadLine() ?? throw new NullReferenceException();
             var row = new List<char>();
             map.Add(row);
             foreach (var letter in fullString)
@@ -49,6 +45,8 @@ class Program
             foreach (var letter in row)
             {
                 var node = new PathNode(letter);
+
+                PathNode? start;
                 if (letter == 'S') start = node;
                 if (letter == 'E') end = node;
                 pathNodes.Add(node);
@@ -115,7 +113,7 @@ class Program
             try
             {
                 var minDistance = int.MaxValue;
-                PathNode targetNode = null;
+                PathNode? targetNode = null;
                 for (int i = 0; i < distances.Count; i++)
                 {
                     if (chekked.Contains(pathNodes[i])) continue;
@@ -127,6 +125,7 @@ class Program
 
 
                 }
+                if (targetNode is null) throw new NullReferenceException();
                 foreach (var node in targetNode.Neighbors)
                 {
                     var index = pathNodes.IndexOf(node);
@@ -145,7 +144,7 @@ class Program
 
         }
 
-
+        if (end is null) throw new NullReferenceException();
         resultFirst = distances[pathNodes.IndexOf(end)];
         stopwatch.Stop();
 

@@ -11,12 +11,11 @@ class Program
 {
     const string inputPath = @"..\..\..\input.txt";
 
-    static int resultFirst = -1;
+    static readonly int resultFirst = -1;
     static int resultSecond = -1;
 
-    static List<Valve> valves = new();
-    static int minutesLeft = 30;
-    static int minutesLeftTwo = 26;
+    static readonly List<Valve> valves = new();
+    static readonly int minutesLeftTwo = 26;
 
     static void Main()
     {
@@ -25,14 +24,11 @@ class Program
 
         var currentPoint = new Valve("AA");
         valves.Add(currentPoint);
-        var pressureReleased = 0;
 
         using var reader = new StreamReader(inputPath);
         while (!reader.EndOfStream)
         {
-            string fullString = reader.ReadLine();
-            if (fullString is null) throw new NullReferenceException();
-
+            var fullString = reader.ReadLine() ?? throw new NullReferenceException();
             var match = Regex.Match(fullString
                 , "Valve (?'Name'\\w+) has flow rate=(?'Rate'\\d+); tunnels? leads? to valves? (?'Neighbors'.+)");
 
@@ -216,7 +212,7 @@ class Program
             var secondTime = time;
 
             var combos = new List<List<Valve>>();
-            while (profitableValves.Count() >= 8)
+            while (profitableValves.Count >= 8)
             {
                 var top = profitableValves.GetRange(0, 8);
                 combos = GenerateCombos(top, 8);
@@ -229,14 +225,14 @@ class Program
                 firstHalf.Add(firstStarter);
                 profitableValves.Remove(firstStarter);
 
-                Console.WriteLine($"Got {15 - profitableValves.Count()} item.");
+                Console.WriteLine($"Got {15 - profitableValves.Count} item.");
 
                 secondTime = secondTime - secondStarter.GetShortestDistance(combos[0][4].Name, new()) - 1;
                 secondStarter = combos[0][4];
                 secondHalf.Add(secondStarter);
                 profitableValves.Remove(secondStarter);
 
-                Console.WriteLine($"Got {15 - profitableValves.Count()} item.");
+                Console.WriteLine($"Got {15 - profitableValves.Count} item.");
             }
             if (profitableValves.Count % 2 != 0)
             {
@@ -343,7 +339,7 @@ class Program
             return output;
         };
 
-        for (int i = 0; i < secondHalf.Count(); i++)
+        for (int i = 0; i < secondHalf.Count; i++)
         {
             List<T> temp = new(firstHalf);
             List<T> temp2 = new(secondHalf);
@@ -408,8 +404,10 @@ class Program
             if (name == this.Name) return 0;
             var valve = Neighbors.Find(v => v.Name == name);
             if (valve is not null) return 1;
-            var visitedFromHere = new List<Valve>(visited);
-            visitedFromHere.Add(this);
+            var visitedFromHere = new List<Valve>(visited)
+            {
+                this
+            };
             var distances = new List<int>() { valves.Count };
             foreach (var neighbor in Neighbors)
             {
