@@ -5,7 +5,7 @@ using Year2023;
 var timer = new Stopwatch();
 timer.Start();
 
-Day currentDay = new Day13();
+Day currentDay = new Day15();
 
 if (!Directory.Exists($"../../../{currentDay.GetType().Name}"))
 {
